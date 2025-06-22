@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Program Paint Lengkap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 30px;
+        }
+
+        .header-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .control-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .section-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .btn-custom {
+            margin: 5px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-drawing {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+        }
+
+        .btn-drawing:hover, .btn-drawing:focus {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-control {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+            border: none;
+        }
+
+        .btn-control:hover {
+            background: linear-gradient(45deg, #138496, #117a8b);
+            transform: translateY(-2px);
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            border: 3px solid #667eea;
+        }
+
+        #drawContainer {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            cursor: crosshair;
+            background: #fafafa;
+        }
+
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .transform-section {
+            background: rgba(255, 248, 220, 0.9);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .input-group-custom {
+            margin: 10px 0;
+        }
+
+        .polygon-info {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: center;
+            color: #2e7d32;
+        }
+
+        .btn-transform {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #333;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-transform:hover {
+            background: linear-gradient(45deg, #e0a800, #d39e00);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container" style="max-width: 1400px;">
+            <h1 class="header-title">🎨 Program Paint Lengkap</h1>
+
+            <!-- Drawing Tools Section -->
+            <div class="control-section">
+                <h5 class="section-title">🖌️ Alat Gambar</h5>
+                <div class="d-flex flex-wrap justify-content-center">
+                    <input type="radio" class="btn-check" name="drawing-options" id="option1" autocomplete="off" checked />
+                    <label class="btn btn-drawing btn-custom" for="option1">Garis Halus</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option2" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option2">Garis Cepat</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option3" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option3">Lingkaran</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option4" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option4">Elips</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option5" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option5">Segitiga</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option6" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option6">Persegi</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option7" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option7">Persegi Panjang</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option8" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option8">Polygon</label>
+                    
+                    <input type="radio" class="btn-check" name="drawing-options" id="option9" autocomplete="off" />
+                    <label class="btn btn-drawing btn-custom" for="option9">Garis Bebas</label>
+                </div>
+                
+                <div class="polygon-info">
+                    <strong>Tips Polygon:</strong> Klik beberapa titik untuk membuat polygon, lalu double-click untuk menyelesaikan.
+                </div>
+            </div>
+
+            <!-- Transformation Section -->
+            <div class="transform-section" id="divTransform" style="display: none;">
+                <h5 class="section-title">⚙️ Transformasi Segitiga</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label class="form-label">Nilai X:</label>
+                            <input type="number" class="form-control" id="input1" placeholder="Masukkan nilai X">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label class="form-label">Nilai Y:</label>
+                            <input type="number" class="form-control" id="input2" placeholder="Masukkan nilai Y">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center mt-3">
+                    <button type="button" class="btn btn-transform btn-custom" id="trans1">↗️ Geser</button>
+                    <button type="button" class="btn btn-transform btn-custom" id="trans2">🔍 Perbesar/Kecil</button>
+                    <button type="button" class="btn btn-transform btn-custom" id="trans3">🔄 Putar</button>
+                    <button type="button" class="btn btn-transform btn-custom" id="trans4">↔️ Cermin Horizontal</button>
+                    <button type="button" class="btn btn-transform btn-custom" id="trans5">↕️ Cermin Vertikal</button>
+                    <button type="button" class="btn btn-transform btn-custom" id="trans6">⤴️ Geser Diagonal</button>
+                </div>
+            </div>
+
+            <!-- Control Tools Section -->
+            <div class="control-section">
+                <h5 class="section-title">🛠️ Kontrol</h5>
+                <div class="d-flex flex-wrap justify-content-center">
+                    <button type="button" class="btn btn-control btn-custom" id="btnUndo">↶ Undo</button>
+                    <button type="button" class="btn btn-control btn-custom" id="btnRedo">↷ Redo</button>
+                    <button type="button" class="btn btn-danger-custom btn-custom" id="option10">🗑️ Hapus Semua</button>
+                    <button type="button" class="btn btn-control btn-custom" id="btnFill">🎨 Isi Warna</button>
+                </div>
+                
+                <!-- Color Picker -->
+                <div class="color-picker-container mt-3 mx-auto" style="max-width: 400px;">
+                    <label for="colorPicker" class="form-label mb-0">Pilih Warna:</label>
+                    <input type="color" class="form-control form-control-color" id="colorPicker" value="#000000" style="width: 60px; height: 40px;">
+                    <div class="color-preview" id="colorPreview" style="background-color: #000000;"></div>
+                    <button type="button" class="btn btn-control btn-custom btn-sm" id="btnChangeColor">Terapkan</button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="canvas-container">
+                <div class="d-flex justify-content-center">
+                    <canvas id="drawContainer" width="1200" height="500"></canvas>
+                </div>
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        💡 Klik dan drag untuk menggambar | 🖱️ Double-click untuk menyelesaikan polygon
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="paint.js"></script>
+</body>
+</html>
