@@ -1,4 +1,3 @@
-// Program Paint Lengkap - JavaScript (DIPERBAIKI)
 class PaintApp {
     constructor() {
         this.canvas = document.getElementById('drawContainer');
@@ -99,8 +98,6 @@ class PaintApp {
         this.currentTool = toolMap[toolId];
         this.polygonPoints = [];
         this.isDrawingPolygon = false;
-        
-        // Show/hide transformation panel
         const transformDiv = document.getElementById('divTransform');
         if (this.currentTool === 'triangle') {
             transformDiv.style.display = 'block';
@@ -119,7 +116,7 @@ class PaintApp {
 
     startDrawing(e) {
         if (this.currentTool === 'polygon') {
-            return; // Polygon menggunakan click events
+            return; 
         }
 
         this.isDrawing = true;
@@ -128,13 +125,9 @@ class PaintApp {
         this.startY = pos.y;
         this.currentX = pos.x;
         this.currentY = pos.y;
-
-        // Save state for preview (untuk semua tools kecuali free)
         if (this.currentTool !== 'free') {
             this.previewState = this.canvas.toDataURL();
         }
-
-        // Hanya free drawing yang langsung mulai path
         if (this.currentTool === 'free') {
             this.ctx.beginPath();
             this.ctx.moveTo(pos.x, pos.y);
@@ -149,17 +142,14 @@ class PaintApp {
         this.currentY = pos.y;
 
         if (this.currentTool === 'free') {
-            // Hanya free drawing yang menggambar saat mouse move
             this.ctx.lineTo(pos.x, pos.y);
             this.ctx.stroke();
         } else if (['smooth', 'fast', 'circle', 'ellipse', 'triangle', 'square', 'rectangle'].includes(this.currentTool)) {
-            // Semua tool lain menggunakan preview
             this.drawPreview();
         }
     }
 
     drawPreview() {
-        // Restore canvas to state before preview
         if (this.previewState) {
             const img = new Image();
             img.onload = () => {
@@ -182,7 +172,6 @@ class PaintApp {
         
         switch (this.currentTool) {
             case 'smooth':
-                // Garis lurus halus
                 this.ctx.beginPath();
                 this.ctx.moveTo(this.startX, this.startY);
                 this.ctx.lineTo(this.currentX, this.currentY);
@@ -190,7 +179,6 @@ class PaintApp {
                 break;
                 
             case 'fast':
-                // Garis lurus dengan snap ke 45 derajat
                 let snapX = this.currentX;
                 let snapY = this.currentY;
                 
@@ -198,16 +186,11 @@ class PaintApp {
                 const dy = this.currentY - this.startY;
                 const absDx = Math.abs(dx);
                 const absDy = Math.abs(dy);
-                
-                // Snap ke horizontal, vertikal, atau diagonal 45°
                 if (absDx > absDy * 2) {
-                    // Horizontal
                     snapY = this.startY;
                 } else if (absDy > absDx * 2) {
-                    // Vertikal
                     snapX = this.startX;
                 } else {
-                    // Diagonal 45°
                     const diagonal = Math.max(absDx, absDy);
                     snapX = this.startX + (dx > 0 ? diagonal : -diagonal);
                     snapY = this.startY + (dy > 0 ? diagonal : -diagonal);
@@ -217,8 +200,6 @@ class PaintApp {
                 this.ctx.moveTo(this.startX, this.startY);
                 this.ctx.lineTo(snapX, snapY);
                 this.ctx.stroke();
-                
-                // Update current position untuk final drawing
                 this.snapX = snapX;
                 this.snapY = snapY;
                 break;
@@ -269,7 +250,6 @@ class PaintApp {
             // Free drawing langsung selesai
             this.saveState();
         } else {
-            // Semua tool lain perlu final drawing
             if (this.historyStep >= 0) {
                 const img = new Image();
                 img.onload = () => {
@@ -348,7 +328,6 @@ class PaintApp {
                 this.ctx.closePath();
                 this.ctx.stroke();
                 
-                // Store triangle for transformation
                 this.triangle = triangle;
                 break;
         }
@@ -358,8 +337,6 @@ class PaintApp {
     this.isFillMode = false;
     this.currentTool = 'smooth';
     this.canvas.style.cursor = 'default';
-    
-    // Reset radio button ke smooth
     const smoothRadio = document.getElementById('option1');
     if (smoothRadio) {
         smoothRadio.checked = true;
@@ -367,7 +344,6 @@ class PaintApp {
 }
 
     handleClick(e) {
-    // Jika dalam mode fill, lakukan fill
     if (this.isFillMode) {
         e.preventDefault();
         e.stopPropagation();
@@ -378,7 +354,6 @@ class PaintApp {
         
         console.log('Fill clicked at:', x, y);
         
-        // Pastikan koordinat dalam bounds
         if (x < 0 || x >= this.canvas.width || y < 0 || y >= this.canvas.height) {
             console.log('Click outside canvas bounds');
             this.resetFillMode();
@@ -389,8 +364,7 @@ class PaintApp {
         this.resetFillMode();
         return;
     }
-    
-    // Logika polygon yang sudah ada
+
     if (this.currentTool === 'polygon') {
         const pos = this.getMousePos(e);
         this.polygonPoints.push(pos);
@@ -404,8 +378,6 @@ class PaintApp {
             this.ctx.lineTo(pos.x, pos.y);
             this.ctx.stroke();
         }
-        
-        // Draw point
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, 3, 0, 2 * Math.PI);
         this.ctx.fill();
@@ -415,7 +387,6 @@ class PaintApp {
 
     finishPolygon(e) {
         if (this.currentTool === 'polygon' && this.polygonPoints.length > 2) {
-            // Close polygon
             this.ctx.strokeStyle = this.currentColor;
             this.ctx.lineWidth = this.lineWidth;
             this.ctx.beginPath();
@@ -429,7 +400,6 @@ class PaintApp {
         }
     }
 
-    // Transformation methods
     transform(type) {
         if (!this.triangle) {
             alert('Gambar segitiga terlebih dahulu!');
@@ -438,11 +408,9 @@ class PaintApp {
 
         const x = parseFloat(document.getElementById('input1').value) || 0;
         const y = parseFloat(document.getElementById('input2').value) || 0;
-        
-        // Clear canvas completely
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Apply transformation and draw only the transformed triangle
+
         this.applyTransformation(type, x, y);
     }
 
@@ -465,7 +433,7 @@ class PaintApp {
                 
             case 'scale':
                 const scaleX = x || 1;
-                const scaleY = y || scaleX; // Jika Y kosong, gunakan nilai X
+                const scaleY = y || scaleX; 
                 
                 if (scaleX === 0 || scaleY === 0) {
                     alert('Nilai scale tidak boleh 0!');
@@ -525,15 +493,13 @@ class PaintApp {
                     alert('Masukkan nilai X atau Y untuk shear!');
                     return;
                 }
-                
-                // Shear X (geser horizontal berdasarkan Y)
+
                 if (shearX !== 0) {
                     newTriangle.p1.x += newTriangle.p1.y * shearX * 0.01;
                     newTriangle.p2.x += newTriangle.p2.y * shearX * 0.01;
                     newTriangle.p3.x += newTriangle.p3.y * shearX * 0.01;
                 }
-                
-                // Shear Y (geser vertikal berdasarkan X)
+
                 if (shearY !== 0) {
                     newTriangle.p1.y += newTriangle.p1.x * shearY * 0.01;
                     newTriangle.p2.y += newTriangle.p2.x * shearY * 0.01;
@@ -541,8 +507,7 @@ class PaintApp {
                 }
                 break;
         }
-        
-        // Draw the transformed triangle
+
         this.ctx.strokeStyle = this.currentColor;
         this.ctx.lineWidth = this.lineWidth;
         this.ctx.beginPath();
@@ -551,13 +516,11 @@ class PaintApp {
         this.ctx.lineTo(newTriangle.p3.x, newTriangle.p3.y);
         this.ctx.closePath();
         this.ctx.stroke();
-        
-        // Update triangle reference
+
         this.triangle = newTriangle;
         this.saveState();
     }
 
-    // Utility methods
     updateColorPreview() {
         const colorPicker = document.getElementById('colorPicker');
         const colorPreview = document.getElementById('colorPreview');
@@ -580,15 +543,13 @@ class PaintApp {
 fillCanvas() {
     this.currentTool = 'fill';
     this.canvas.style.cursor = 'crosshair';
-    this.isFillMode = true; // Flag untuk mode fill
-    
-    // Tambahkan pesan untuk user
+    this.isFillMode = true; 
+
     alert('Mode isi warna aktif! Klik pada area yang ingin diwarnai.');
 }
 
 
    handleClick(e) {
-    // Jika dalam mode fill, lakukan fill
     if (this.isFillMode) {
         e.preventDefault();
         e.stopPropagation();
@@ -598,15 +559,12 @@ fillCanvas() {
         const y = Math.floor(pos.y);
         
         console.log('Fill mode: clicked at', x, y);
-        
-        // Pastikan koordinat dalam bounds
+
         if (x < 0 || x >= this.canvas.width || y < 0 || y >= this.canvas.height) {
             console.log('Click outside canvas bounds');
             this.resetFillMode();
             return;
         }
-        
-        // Lakukan flood fill
         const success = this.performFloodFill(x, y);
         
         if (success) {
@@ -614,13 +572,10 @@ fillCanvas() {
         } else {
             console.log('Fill failed or no change needed');
         }
-        
-        // Reset mode setelah fill
         this.resetFillMode();
         return;
     }
-    
-    // Logika polygon yang sudah ada
+
     if (this.currentTool === 'polygon') {
         const pos = this.getMousePos(e);
         this.polygonPoints.push(pos);
@@ -635,7 +590,6 @@ fillCanvas() {
             this.ctx.stroke();
         }
         
-        // Draw point
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, 3, 0, 2 * Math.PI);
         this.ctx.fill();
@@ -646,33 +600,25 @@ fillCanvas() {
     try {
         console.log('Starting flood fill at:', x, y);
         
-        // Get canvas image data
         const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         const data = imageData.data;
         
-        // Get target color (color to be replaced)
         const targetColor = this.getPixelColor(data, x, y, this.canvas.width);
         
-        // Get fill color
         const fillColor = this.hexToRgb(this.currentColor);
         
         console.log('Target color:', targetColor);
         console.log('Fill color:', fillColor);
         
-        // Don't fill if target color is same as fill color
         if (this.colorsMatch(targetColor, fillColor)) {
             console.log('Colors match - no fill needed');
             return false;
         }
         
-        // Use optimized flood fill
         const pixelsFilled = this.floodFillOptimized(data, x, y, this.canvas.width, this.canvas.height, targetColor, fillColor);
         
         if (pixelsFilled > 0) {
-            // Put modified image data back to canvas
             this.ctx.putImageData(imageData, 0, 0);
-            
-            // PENTING: Tunggu sebentar agar canvas ter-render, baru save state
             setTimeout(() => {
                 this.saveState();
                 console.log('Fill completed and saved, pixels filled:', pixelsFilled);
@@ -706,11 +652,10 @@ fillCanvas() {
         data[index] = color.r;
         data[index + 1] = color.g;
         data[index + 2] = color.b;
-        data[index + 3] = 255; // Full opacity
+        data[index + 3] = 255; 
     }
 
  colorsMatch(color1, color2) {
-    // Jika salah satu warna transparan, anggap berbeda
     if (color1.a === 0 || color2.a === 0) {
         return color1.a === color2.a;
     }
@@ -725,14 +670,13 @@ floodFillOptimized(data, startX, startY, width, height, targetColor, fillColor) 
     const stack = [{x: startX, y: startY}];
     const visited = new Set();
     let pixelsFilled = 0;
-    const maxPixels = width * height * 0.8; // Batasi maksimal 80% canvas
+    const maxPixels = width * height * 0.8; 
     
     console.log('Starting flood fill algorithm...');
     
     while (stack.length > 0 && pixelsFilled < maxPixels) {
         const {x, y} = stack.pop();
         
-        // Check bounds
         if (x < 0 || x >= width || y < 0 || y >= height) {
             continue;
         }
@@ -742,20 +686,16 @@ floodFillOptimized(data, startX, startY, width, height, targetColor, fillColor) 
             continue;
         }
         
-        // Get current pixel color
         const currentColor = this.getPixelColor(data, x, y, width);
         
-        // If current color doesn't match target color, skip
         if (!this.colorsMatch(currentColor, targetColor)) {
             continue;
         }
         
-        // Mark as visited and set new color
         visited.add(key);
         this.setPixelColor(data, x, y, width, fillColor);
         pixelsFilled++;
         
-        // Add adjacent pixels to stack (4-connected)
         stack.push({x: x + 1, y: y});
         stack.push({x: x - 1, y: y});
         stack.push({x: x, y: y + 1});
@@ -811,12 +751,10 @@ floodFillOptimized(data, startX, startY, width, height, targetColor, fillColor) 
     }
 }
 
-// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const paintApp = new PaintApp();
 });
 
-// Additional utility functions
 function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
